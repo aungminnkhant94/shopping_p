@@ -4,19 +4,25 @@ require '../config/config.php';
 require '../config/common.php';
 
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
-  header('Location: login.php');
+  header('Location: /admin/login.php');
 }
 if ($_SESSION['role'] != 1) {
-  header('Location: login.php');
+  header('Location: /admin/login.php');
 }
 
 if ($_POST) {
-  if (empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password']) || strlen($_POST['password']) || empty ($_POST['address']) || empty($_POST['phone']) < 6) {
+  if (empty($_POST['name']) || empty($_POST['email']) || empty($_POST['phone']) || empty($_POST['address']) || empty($_POST['password']) || strlen($_POST['password']) < 4) {
     if (empty($_POST['name'])) {
       $nameError = 'Name cannot be null';
     }
     if (empty($_POST['email'])) {
       $emailError = 'Email cannot be null';
+    }
+    if (empty($_POST['phone'])) {
+      $phoneError = 'Phone cannot be null';
+    }
+    if (empty($_POST['address'])) {
+      $addressError = 'Address cannot be null';
     }
     if (empty($_POST['password'])) {
       $passwordError = 'Password cannot be null';
@@ -24,18 +30,12 @@ if ($_POST) {
     if(strlen($_POST['password']) < 4){
       $passwordError = 'Password should be 4 characters at least';
     }
-    if (empty($_POST['address'])) {
-      $addressError = "Address cannot be null";
-    }
-    if (empty($_POST['phone'])) {
-      $phoneError = 'Phone Number cannot be null';
-    }
   }else{
     $name = $_POST['name'];
     $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
     $password = password_hash($_POST['password'],PASSWORD_DEFAULT);
-    $address =$_POST['address'];
-    $phone =$_POST['phone'];
 
     if (empty($_POST['role'])) {
       $role = 0;
@@ -52,9 +52,9 @@ if ($_POST) {
     if ($user) {
       echo "<script>alert('Email duplicated')</script>";
     }else{
-      $stmt = $pdo->prepare("INSERT INTO users(name,email,password,address,phone,role) VALUES (:name,:email,:password,:address,:phone,:role,:created_at)");
+      $stmt = $pdo->prepare("INSERT INTO users(name,email,password,role,phone,address) VALUES (:name,:email,:password,:role,:phone,:address)");
       $result = $stmt->execute(
-          array(':name'=>$name,':email'=>$email,':password'=>$password,':role'=>$role,':address'=>$address,':phone'=>$phone)
+          array(':name'=>$name,':email'=>$email,':password'=>$password,':role'=>$role,':phone'=>$phone,':address'=>$address)
       );
       if ($result) {
         echo "<script>alert('Successfully added');window.location.href='user_list.php';</script>";
@@ -86,16 +86,16 @@ if ($_POST) {
                     <input type="email" class="form-control" name="email" value="">
                   </div>
                   <div class="form-group">
-                    <label for="">Password</label><p style="color:red"><?php echo empty($passwordError) ? '' : '*'.$passwordError; ?></p>
-                    <input type="password" name="password" class="form-control">
+                    <label for="">Phone</label><p style="color:red"><?php echo empty($phoneError) ? '' : '*'.$phoneError; ?></p>
+                    <input type="text" class="form-control" name="phone" value="" >
                   </div>
                   <div class="form-group">
                     <label for="">Address</label><p style="color:red"><?php echo empty($addressError) ? '' : '*'.$addressError; ?></p>
-                    <input type="text" class="form-control" name="address" value="">
+                    <input type="text" class="form-control" name="address" value="" >
                   </div>
                   <div class="form-group">
-                    <label for="">Phone No.</label><p style="color:red"><?php echo empty($phoneError) ? '' : '*'.$phoneError; ?></p>
-                    <input type="text" class="form-control" name="phone" value="">
+                    <label for="">Password</label><p style="color:red"><?php echo empty($passwordError) ? '' : '*'.$passwordError; ?></p>
+                    <input type="password" name="password" class="form-control">
                   </div>
                   <div class="form-group">
                     <label for="vehicle3"> Admin</label><br>
