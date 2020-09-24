@@ -29,7 +29,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                   $pageno = 1;
                 }
 
-                $numOfrecs = 1;
+                $numOfrecs = 5;
                 $offset = ($pageno - 1) * $numOfrecs;
 
                 if (empty($_POST['search']) && empty($_COOKIE['search'])) {
